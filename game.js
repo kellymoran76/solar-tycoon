@@ -69,6 +69,9 @@
       return null;
     }
   }
+   
+let els = null;          // ✅ exists immediately (no TDZ)
+let pendingEventMsg = ""; // buffer messages before UI is ready
 
   // ---------- Game Data ----------
   const VERSION = 1;
@@ -329,7 +332,7 @@
   ];
 
   // ---------- UI Build ----------
-  const els = {
+  els = {
     cash: $("cash"),
     cashRate: $("cashRate"),
     energy: $("energy"),
@@ -374,9 +377,10 @@
     modalClose: $("modalClose"),
   };
 
-  function setEventLine(msg){
-    els.eventLine.textContent = msg;
-  }
+function setEventLine(msg){
+  pendingEventMsg = msg;                 // always remember last message
+  if (els?.eventLine) els.eventLine.textContent = msg;  // only write if ready
+}
 
   function openModal(title, bodyNode){
     els.modalTitle.textContent = title;
