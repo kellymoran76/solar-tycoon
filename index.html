@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solar Idle — Clicker Grid Tycoon</title>
+  <meta name="description" content="An idle clicker solar game. Build PV, manage storage, ride the sun curve, and grow your grid." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs/%3E%3Ccircle cx='20' cy='20' r='10' fill='%23FDB813'/%3E%3Cpath d='M10 52h44' stroke='%2322c55e' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M16 46l8-18 8 18 8-18 8 18' fill='none' stroke='%2322c55e' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="title">Solar Idle</div>
+        <div class="subtitle">Click • Build • Store • Sell</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="btnSave" class="btn ghost" title="Save now">Save</button>
+      <button id="btnExport" class="btn ghost" title="Export save">Export</button>
+      <button id="btnImport" class="btn ghost" title="Import save">Import</button>
+      <button id="btnReset" class="btn danger" title="Hard reset">Reset</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: Primary -->
+    <section class="card hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <h1>Build a solar empire.</h1>
+          <p class="muted">
+            Generate energy by clicking, then scale with panels, inverters, trackers, and batteries.
+            Ride the day/night curve, survive clouds, and optimize your grid revenue.
+          </p>
+
+          <div class="big-stats">
+            <div class="stat">
+              <div class="stat-label">Cash</div>
+              <div class="stat-value" id="cash">$0</div>
+              <div class="stat-sub" id="cashRate">+$0/s</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Stored Energy</div>
+              <div class="stat-value" id="energy">0 kWh</div>
+              <div class="stat-sub" id="storage">0 / 0 kWh</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Generation</div>
+              <div class="stat-value" id="gen">0 kW</div>
+              <div class="stat-sub" id="sun">Sun: 0%</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="btnClick" class="btn primary big">
+              Generate Energy <span class="tiny" id="clickHint">(+0.05 kWh)</span>
+            </button>
+
+            <div class="toggles">
+              <label class="toggle">
+                <input type="checkbox" id="toggleAutosell" checked />
+                <span>Auto-sell energy</span>
+              </label>
+              <label class="toggle">
+                <input type="checkbox" id="toggleReduceMotion" />
+                <span>Reduce motion</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div class="bar">
+              <div class="bar-top">
+                <span>Storage</span>
+                <span id="storagePct">0%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" id="barStorage"></div>
+              </div>
+            </div>
+
+            <div class="bar">
+              <div class="bar-top">
+                <span>Day Cycle</span>
+                <span id="timeOfDay">Night</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill sun" id="barDay"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="eventline" id="eventLine" aria-live="polite"></div>
+        </div>
+
+        <div class="hero-right">
+          <div class="card inner">
+            <div class="section-title">Grid Overview</div>
+
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Panels</div>
+                <div class="kpi-value" id="kpiPanels">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Inverters</div>
+                <div class="kpi-value" id="kpiInverters">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Trackers</div>
+                <div class="kpi-value" id="kpiTrackers">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Batteries</div>
+                <div class="kpi-value" id="kpiBatteries">0</div>
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="mini-row">
+                <span class="muted">PPA price</span>
+                <span id="ppa">$0.12/kWh</span>
+              </div>
+              <div class="mini-row">
+                <span class="muted">Inverter sell cap</span>
+                <span id="sellCap">0 kW</span>
+              </div>
+              <div class="mini-row">
+                <span class="muted">Curtailment</span>
+                <span id="curtail">0%</span>
+              </div>
+              <div class="mini-row">
+                <span class="muted">Lifetime sold</span>
+                <span id="lifetimeSold">0 kWh</span>
+              </div>
+              <div class="mini-row">
+                <span class="muted">CO₂ avoided</span>
+                <span id="co2">0 t</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-title">Achievements</div>
+            <div id="achievements" class="achievements"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Store + Upgrades -->
+    <aside class="side">
+      <section class="card">
+        <div class="section-head">
+          <div class="section-title">Store</div>
+          <div class="muted tiny">Buy hardware to scale generation & storage.</div>
+        </div>
+
+        <div class="store" id="store"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div class="section-title">Upgrades</div>
+          <div class="muted tiny">Permanent boosts and optimizations.</div>
+        </div>
+
+        <div class="upgrades" id="upgrades"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div class="section-title">Stats</div>
+          <div class="muted tiny">What’s happening under the hood.</div>
+        </div>
+
+        <div class="stats" id="stats"></div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span class="muted">Tip: Enable GitHub Pages to play online. Saves are stored in your browser.</span>
+    <a class="muted" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+  </footer>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div id="modalTitle" class="section-title">Modal</div>
+        <button id="modalClose" class="btn ghost">Close</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="./game.js"></script>
+</body>
+</html>
