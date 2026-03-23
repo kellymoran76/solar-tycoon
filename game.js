@@ -187,7 +187,7 @@ let pendingEventMsg = ""; // buffer messages before UI is ready
       t: now(),
 
       // resources
-      cash: 0,
+      cash: 100,
       energyKWh: 0,
 
       // lifetime
@@ -642,7 +642,6 @@ function setEventLine(msg){
 
     const sf = sunFactor(S);
     els.sun.textContent = `Sun: ${fmt.pct(clamp(sf, 0, 1.0))}`;
-
     els.ppa.textContent = `$${ECON.ppaPrice.toFixed(2)}/kWh`;
     const sellCapKW = inverterSellCapKW(S);
     els.sellCap.textContent = fmt.kw(sellCapKW);
@@ -686,8 +685,8 @@ function setEventLine(msg){
       const meta = $(`meta_${item.id}`);
       const btn = $(`buy_${item.id}`);
 
-      const reqOk = item.req ? item.req(S) : true;
-      const ownedCount = getOwnedCount(item.id);
+    const reqOk = item.req ? item.req(S) : true;
+    const ownedCount = getOwnedCount(item.id);
 
       meta.textContent = `Cost: ${fmt.money(c)} • Owned: ${fmt.int(ownedCount)}${reqOk ? "" : " • Locked"}`;
       btn.disabled = (!reqOk) || (S.cash < c);
