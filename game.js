@@ -187,7 +187,7 @@ let pendingEventMsg = ""; // buffer messages before UI is ready
       t: now(),
 
       // resources
-      cash: 0,
+      cash: 100,
       energyKWh: 0,
 
       // lifetime
