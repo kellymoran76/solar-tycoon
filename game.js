@@ -79,7 +79,7 @@ let pendingEventMsg = ""; // buffer messages before UI is ready
 
   // Core economic knobs (tweak for balance)
   const ECON = {
-    ppaPrice: 0.12,            // $/kWh
+    ppaPrice: 100.00,          // $/kWh (game rate)
     co2KgPerKWh: 0.4,          // kg CO2 avoided per kWh (rough)
     dayLengthSec: 360,         // 6 minutes per full day cycle
     cloudChancePerSec: 0.012,  // chance to start a cloud event each second
@@ -677,7 +677,7 @@ function setEventLine(msg){
     const instantSellCap = sellCapKW;
     const instantSellKW = S.autosell ? Math.min(gen, instantSellCap) : 0;
     const cashPerSec = (instantSellKW / 3600) * ECON.ppaPrice * S.mods.revenueMult;
-    els.cashRate.textContent = `+${fmt.money(cashPerSec)}/s`;
+    els.cashRate.textContent = `+${fmt.money(cashPerSec * 3600)}/hr`;
 
     // Store rows update
     for (const item of STORE_ITEMS){
