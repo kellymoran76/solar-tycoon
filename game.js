@@ -193,8 +193,8 @@
 
       // hardware
       hardware: {
-        panels: 0,
-        inverters: 0,
+        panels: 1,
+        inverters: 1,
         trackers: 0,
         batteries: 0
       },
